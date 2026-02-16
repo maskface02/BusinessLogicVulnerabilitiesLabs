@@ -12,4 +12,9 @@ def get_csrf_token(session: requests.Session, url: str) -> str:
 
     return csrf_input["value"]
 
-
+def login(session: requests.Session, login_url: str, username: str, password: str):
+    csrf_token = get_csrf_token(session, login_url)
+    response = session.post(login_url, data={"csrf": csrf_token, "username": username, "password": password}, verify=False)
+    response.raise_for_status()
+    if "my-account" not in response.url:
+        raise RuntimeError("(-) Login failed")
